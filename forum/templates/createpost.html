@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}
+Создать пост
+{% endblock title %}
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    {{ form }}
+    {% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %}
+                {{ error|escape }}
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+    <input class="btn-dark" type="submit" value="Создать">
+</form>
+{% endblock content %}
