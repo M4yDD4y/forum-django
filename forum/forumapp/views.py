@@ -3,8 +3,8 @@ from django.contrib import auth
 from django.forms import ValidationError
 from django.http import HttpRequest
 from datetime import datetime
-from .forms import Login, Create
-from .models import Post
+from .forms import Login, Create, Register, Comm
+from .models import Post, User, Comment
 
 # Create your views here.
 
@@ -23,8 +23,7 @@ def login(request):
                                      password=loginForm.cleaned_data['password'])
             if user is not None:
                 auth.login(request, user)
-                return render(request, 'index.html',
-                              {'posts': get_posts()})
+                return redirect('index')
             else:
                 loginForm.add_error(None, ValidationError('Ошибка логина или пароля.'))
                 return render(request, 'login.html',
@@ -58,10 +57,39 @@ def create(request: HttpRequest):
 
 def view(request, postid):
     post = Post.objects.get(id=postid)
+    if request.method == "POST":
+        form = Comm(request.POST)
+        if form.is_valid():
+            comm = Comment(content=form.cleaned_data.get('content'),
+                        author=request.user,
+                        date=datetime.now(),
+                        post=post)
+            comm.save()
+            return redirect('view', postid=postid)
+    comms = Comment.objects.filter(post=post)
     return render(request, 'viewpost.html',
                   {'post': post,
+                   'comms': comms,
+                   'form': Comm(),
                    'posts': get_posts()})
 
 def logout(request):
     auth.logout(request)
     return redirect('index')
+
+def register(request):
+    if request.method == "POST":
+        form = Register(request.POST)
+        if form.is_valid():
+            user = User(username=form.cleaned_data.get('login'))
+            user.set_password(form.cleaned_data.get('password'))
+            user.save()
+            return redirect('login')
+        return render(request, 'registration.html',
+                    {"form": form,
+                    'posts': get_posts()})
+    else:
+        form = Register()
+        return render(request, 'registration.html',
+                    {"form": form,
+                    'posts': get_posts()})
