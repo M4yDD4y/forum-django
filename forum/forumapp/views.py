@@ -8,8 +8,12 @@ from .models import Post
 
 # Create your views here.
 
+def get_posts():
+    return Post.objects.reverse()[:5]
+
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'index.html',
+                  {'posts': get_posts()})
 
 def login(request):
     if request.method == 'POST':
@@ -19,15 +23,18 @@ def login(request):
                                      password=loginForm.cleaned_data['password'])
             if user is not None:
                 auth.login(request, user)
-                return render(request, 'index.html')
+                return render(request, 'index.html',
+                              {'posts': get_posts()})
             else:
                 loginForm.add_error(None, ValidationError('Ошибка логина или пароля.'))
                 return render(request, 'login.html',
-                              {'form': loginForm})
+                              {'form': loginForm,
+                               'posts': get_posts()})
     else:
         loginForm = Login()
     return render(request, 'login.html',
-                  {"form": loginForm})
+                  {"form": loginForm,
+                   'posts': get_posts()})
 
 def create(request: HttpRequest):
     if request.method == 'POST':
@@ -46,9 +53,15 @@ def create(request: HttpRequest):
     else:
         form = Create()
         return render(request, 'createpost.html',
-                      {'form': form})
+                      {'form': form,
+                       'posts': get_posts()})
 
 def view(request, postid):
     post = Post.objects.get(id=postid)
     return render(request, 'viewpost.html',
-                  {'post': post})
+                  {'post': post,
+                   'posts': get_posts()})
+
+def logout(request):
+    auth.logout(request)
+    return redirect('index')
