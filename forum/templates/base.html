@@ -43,10 +43,10 @@
                 <h4 class="mb-3">Новые обсуждения</h4>
                 {% for post in posts %}
                 <a style="text-decoration: none;" class="text-dark" href="{% url 'view' post.id %}">
-                <div class="rounded p-2 mb-3" style="background: #e0e0e0;">
+                <div class="rounded p-2 mb-3 text-truncate" style="background: #e0e0e0;">
                     <p style="font-weight: bold;">{{post.title}}</p>
                     <p>{{post.content}}</p>
-                    <p>{{post.author}} | {{post.date}}</p>
+                    <p class="text-secondary">{{post.author}} | {{post.date}}</p>
                 </div>
                 </a>
                 {% endfor %}

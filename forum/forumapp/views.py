@@ -9,7 +9,7 @@ from .models import Post, User, Comment
 # Create your views here.
 
 def get_posts():
-    return Post.objects.reverse()[:5]
+    return Post.objects.order_by("-id")[:5]
 
 def index(request):
     return render(request, 'index.html',
