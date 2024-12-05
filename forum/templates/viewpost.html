@@ -6,6 +6,11 @@
 <h3>{{ post.title }}</h3>
 <p>{{ post.author.username}} | {{ post.date }}</p>
 <p>{{ post.content}}</p>
+<div class="d-flex flex-inline w-100">
+    {% for tag in post.topics.all %}
+    <a style="text-decoration: none;" class="text-dark m-1" href="#"><span class="border border-dark rounded p-1">{{ tag.name }}</span></a>
+    {% endfor %}
+</div>
 <hr>
 {% for comm in comms %}
     <div class="border border-dark rounded w-100 mb-3 p-3">

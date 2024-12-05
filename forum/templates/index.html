@@ -3,5 +3,29 @@
 Главная страница
 {% endblock title %}
 {% block content %}
-Тут что-то будет
+<h4 class="mb-3">Поиск</h4>
+<form method="POST" class="w-100 mb-3">
+    <div class="input-group">
+        {% csrf_token %}
+        {{ form }}
+        <div class="input-group-append">
+            <input type="submit" value="Найти">
+        </div>
+    </div>
+</form>
+{% if result.exists %}
+    <div class="d-flex flex-column">
+    {% for post in result.all %}
+        <a style="text-decoration: none;" class="text-dark" href="{% url 'view' post.id %}">
+            <div class="border border-dark rounded p-2 mb-3 text-truncate" style="background: #e0e0e0;">
+                <p style="font-weight: bold;">{{post.title}}</p>
+                <p>{{post.content}}</p>
+                <p class="text-secondary">{{post.author}} | {{post.date}}</p>
+            </div>
+        </a>
+    {% endfor %}
+    </div>
+{% else %}
+    <h4 class="mb-3">Нет результатов</h4>
+{% endif %}
 {% endblock content %}

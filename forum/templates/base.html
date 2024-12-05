@@ -12,7 +12,7 @@
         <nav class="navbar bg-dark flex-md-row p-3">
             <div class="d-flex justify-content-center">
                 <div class="navbar-header">
-                    <a class="navbar-brand text-white font-weight-bolder" href="{% url 'index' %}">Форум</a>
+                    <a class="navbar-brand text-white font-weight-bolder" href="{% url 'index' %}">AseMayForum</a>
                 </div>
                 <ul class="nav navbar-nav flex-row">
                 {% if user.is_authenticated %}
@@ -33,17 +33,24 @@
         </nav>
         <div class="d-flex h-100">
             <div class="col-md-2 bg-light p-3">
-                <h4 class="mb-3">Тематики</h4>
+                <h4 class="mb-3">Популярные тематики</h4>
+                <div class="d-flex flex-column">
+                {% for topic in topics %}
+                <a style="text-decoration: none;" class="text-dark" href="#">
+                <div class="border border-dark rounded m-1 p-1">{{ topic.name }} | {{ topic.count }}</div>
+                </a>
+                {% endfor %}
+                </div>
             </div>
-            <div class="col-md-8 p-3">
+            <div class="col-md-7 p-3">
                 {% block content %}
                 {% endblock content %}
             </div>
-            <div class="col-md-2 bg-light p-3">
+            <div class="col-md-3 bg-light p-3">
                 <h4 class="mb-3">Новые обсуждения</h4>
                 {% for post in posts %}
                 <a style="text-decoration: none;" class="text-dark" href="{% url 'view' post.id %}">
-                <div class="rounded p-2 mb-3 text-truncate" style="background: #e0e0e0;">
+                <div class="border border-dark rounded p-2 mb-3 text-truncate" style="background: #e0e0e0;">
                     <p style="font-weight: bold;">{{post.title}}</p>
                     <p>{{post.content}}</p>
                     <p class="text-secondary">{{post.author}} | {{post.date}}</p>
