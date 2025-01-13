@@ -5,6 +5,8 @@ from django.http import HttpRequest
 from datetime import datetime
 from .forms import Login, Create, Register, Comm, Search
 from .models import Post, User, Comment, Topic
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 # Create your views here.
 
@@ -128,3 +130,8 @@ def register(request):
                     {"form": form,
                     'posts': get_posts(),
                     'topics': get_topics()})
+
+class PostView(APIView):
+    def get(self, request):
+        posts = Post.objects.all()
+        return Response({"posts": posts})
