@@ -7,12 +7,18 @@ class Topic(models.Model):
     name = models.CharField(max_length=50, unique=True)
     count = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.name
+
 class Post(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     author = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date = models.DateTimeField()
     topics = models.ManyToManyField(Topic, null=True)
+
+    def __str__(self):
+        return self.title
 
 class Comment(models.Model):
     content = models.TextField()

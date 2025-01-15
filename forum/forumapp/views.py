@@ -5,6 +5,7 @@ from django.http import HttpRequest
 from datetime import datetime
 from .forms import Login, Create, Register, Comm, Search
 from .models import Post, User, Comment, Topic
+from .serializers import PostSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -134,4 +135,12 @@ def register(request):
 class PostView(APIView):
     def get(self, request):
         posts = Post.objects.all()
-        return Response({"posts": posts})
+        serializer = PostSerializer(posts, many=True)
+        return Response({"posts": serializer.data})
+    
+    def post(self, request):
+        post = request.data.get("posts")
+        serializer = PostSerializer(data=post)
+        if serializer.is_valid(raise_exception=True):
+            savedpost = serializer.save()
+        return Response({"success": "Article '{}' created successfully".format(savedpost.title)})
