@@ -5,9 +5,12 @@ from django.http import HttpRequest
 from datetime import datetime
 from .forms import Login, Create, Register, Comm, Search
 from .models import Post, User, Comment, Topic
+from .models import Post
 from .serializers import PostSerializer
+from rest_framework.generics import get_object_or_404
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import ListModelMixin
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 # Create your views here.
 
@@ -132,11 +135,14 @@ def register(request):
                     'posts': get_posts(),
                     'topics': get_topics()})
 
-class PostView(APIView):
-    def get(self, request):
-        posts = Post.objects.all()
-        serializer = PostSerializer(posts, many=True)
-        return Response({"posts": serializer.data})
+class PostView(ListModelMixin, GenericAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+        # posts = Post.objects.all()
+        # serializer = PostSerializer(posts, many=True)
+        # return Response({"posts": serializer.data})
     
     def post(self, request):
         post = request.data.get("posts")
@@ -144,3 +150,22 @@ class PostView(APIView):
         if serializer.is_valid(raise_exception=True):
             savedpost = serializer.save()
         return Response({"success": "Article '{}' created successfully".format(savedpost.title)})
+    
+    def put(self, request, pk):
+        post_saved = get_object_or_404(Post.objects.all(), pk=pk)
+        data = request.data.get('posts')
+        serializer = PostSerializer(instance=post_saved, data=data, partial=True)
+
+        if serializer.is_valid(raise_exception=True):
+            post_saved = serializer.save()
+
+        return Response({
+            "success":"Article '{}' updated successfully".format(post_saved.title)
+        })
+    
+    def delete(self, request, pk):
+        post = get_object_or_404(Post.objects.all(), pk=pk)
+        post.delete()
+        return Response({
+            "message": "Post with i '{}' has been deleted.".format(pk)
+        }, status=204)
