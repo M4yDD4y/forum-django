@@ -5,12 +5,11 @@ from django.http import HttpRequest
 from datetime import datetime
 from .forms import Login, Create, Register, Comm, Search
 from .models import Post, User, Comment, Topic
-from .models import Post
+from .models import Post, Comment
 from .serializers import PostSerializer
-from rest_framework.generics import get_object_or_404
-from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import ListModelMixin
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+from rest_framework import viewsets
 
 # Create your views here.
 
@@ -134,22 +133,44 @@ def register(request):
                     {"form": form,
                     'posts': get_posts(),
                     'topics': get_topics()})
-
-class PostView(ListModelMixin, GenericAPIView):
-    queryset = Post.objects.all()
+class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+    queryset = Post.objects.all()
+
+# class PostView(viewsets.ModelViewSet):
+#     serializer_class = PostSerializer
+#     queryset = Post.objects.all()
+
+    # def list(self, request):
+    #     queryset = Post.objects.all()
+    #     serializer = PostSerializer(queryset, many=True)
+    #     return Response(serializer.data)
+    
+    # def retrieve(self, request, pk=None):
+    #     queryset = Post.objects.all()
+    #     user = get_object_or_404(queryset, pk=pk)
+    #     serializer = PostSerializer(user)
+    #     return Response(serializer.data)
+
+    # def perform_create(self, serializer):
+    #     comment = get_object_or_404(Comment, id=self.request.data.get('comment_id'))
+    #     return serializer.save(comment=comment)
+
+    # def get(self, request, *args, **kwargs):
+    #     return self.list(request, *args, **kwargs)
         # posts = Post.objects.all()
         # serializer = PostSerializer(posts, many=True)
         # return Response({"posts": serializer.data})
     
-    def post(self, request):
-        post = request.data.get("posts")
-        serializer = PostSerializer(data=post)
-        if serializer.is_valid(raise_exception=True):
-            savedpost = serializer.save()
-        return Response({"success": "Article '{}' created successfully".format(savedpost.title)})
+    
+
+    # def post(self, request, *args, **kwargs):
+    #     return self.create(request, *args, **kwargs)
+        # post = request.data.get("posts")
+        # serializer = PostSerializer(data=post)
+        # if serializer.is_valid(raise_exception=True):
+        #     savedpost = serializer.save()
+        # return Response({"success": "Article '{}' created successfully".format(savedpost.title)})
     
     def put(self, request, pk):
         post_saved = get_object_or_404(Post.objects.all(), pk=pk)
@@ -169,3 +190,7 @@ class PostView(ListModelMixin, GenericAPIView):
         return Response({
             "message": "Post with i '{}' has been deleted.".format(pk)
         }, status=204)
+    
+# class SinglePostView(RetrieveUpdateDestroyAPIView):
+#     queryset = Post.objects.all()
+#     serializer_class = PostSerializer
