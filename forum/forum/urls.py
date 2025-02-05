@@ -27,4 +27,5 @@ urlpatterns = [
     path('create', views.create, name='create'),
     path('admin/', admin.site.urls),
     path('api/', include('forumapp.urls')),
+    path('', include('snippets.urls')),
 ]
