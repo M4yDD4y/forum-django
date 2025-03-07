@@ -24,8 +24,8 @@ class SnippetSerializer(serializers.Serializer):
         instance.save()
         return instance
 
-class UserSerializer(serializers.ModelSerializer):
-    snippets = serializers.PrimaryKeyRelatedField(many=True, view_name='snippet-detail', read_only=True)
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    snippets = serializers.HyperlinkedIdentityField(many=True, view_name='snippet-detail', read_only=True)
         
     class Meta:
         model = User
